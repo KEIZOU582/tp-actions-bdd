@@ -1,0 +1,34 @@
+name: CI Pipeline
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Récupérer le projet
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Préparer PostgreSQL
+      - name: Setup PostgreSQL
+        run: bash db/setup.sh
+
+      # 3. Installer Python 3.12
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 4. Installer les dépendances
+      - name: Install dependencies
+        working-directory: python-app
+        run: pip install -r requirements.txt
+
+      # 5. Exécuter les tests
+      - name: Run tests
+        working-directory: python-app
+        run: pytest -v
