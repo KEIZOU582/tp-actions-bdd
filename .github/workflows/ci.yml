@@ -32,3 +32,67 @@ jobs:
       - name: Run tests
         working-directory: python-app
         run: pytest -v
+  node:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PostgreSQL
+        run: bash db/setup.sh
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: node-app
+        run: npm ci
+
+      - name: Run tests
+        working-directory: node-app
+        run: npm test
+  java:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PostgreSQL
+        run: bash db/setup.sh
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Run tests
+        working-directory: java-app
+        run: mvn -B package      
+  php:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PostgreSQL
+        run: bash db/setup.sh
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo, pdo_pgsql
+
+      - name: Install dependencies
+        working-directory: php-app
+        run: composer install --no-interaction
+
+      - name: Run tests
+        working-directory: php-app
+        run: vendor/bin/phpunit tests      
